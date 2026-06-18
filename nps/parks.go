@@ -1,9 +1,50 @@
 package nps
 
+import (
+	"context"
+	"net/http"
+
+	"github.com/freakytoad1/go-nps/api"
+)
+
 // ParksService handles communication with
 // the /parks related methods of the NPS API.
 type ParksService struct {
 	client *Client
+}
+
+// ParkListOptions specifies the optional query parameters
+// for the /parks endpoint.
+type ParkListOptions struct {
+	// ParkCode is a list of park codes (each 4-10 characters in length).
+	ParkCode []string `url:"parkCode,omitempty,comma"`
+	// StateCode is a list of 2 character state codes.
+	StateCode []string `url:"stateCode,omitempty,comma"`
+	// Q is a term to search on.
+	Q string `url:"q,omitempty"`
+	// Limit is the number of results to return per request. Default is 50.
+	Limit int `url:"limit,omitempty"`
+	// Start is the offset to start returning results from. Default is 0.
+	Start int `url:"start,omitempty"`
+	// Sort is a list of fields to sort the results by. Prefix a field with
+	// a unary negative ("-") for descending order.
+	Sort []string `url:"sort,omitempty,comma"`
+}
+
+// List retrieves data about national parks. A nil opts is allowed and
+// returns the API default result set.
+func (s *ParksService) List(ctx context.Context, opts *ParkListOptions) (*Parks, error) {
+	req, err := s.client.apiClient.NewRequest(ctx, http.MethodGet, "parks", api.WithOptions(opts))
+	if err != nil {
+		return nil, err
+	}
+
+	parks := &Parks{}
+	if err := s.client.apiClient.DoParse(req, parks); err != nil {
+		return nil, err
+	}
+
+	return parks, nil
 }
 
 type Parks struct {
@@ -12,29 +53,29 @@ type Parks struct {
 	Start string  `json:"start"`
 	Data  []*Park `json:"data"`
 }
-type Activities struct {
+type Activity struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
 }
-type Topics struct {
+type Topic struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
 }
-type PhoneNumbers struct {
+type PhoneNumber struct {
 	PhoneNumber string `json:"phoneNumber"`
 	Description string `json:"description"`
 	Extension   string `json:"extension"`
 	Type        string `json:"type"`
 }
-type EmailAddresses struct {
+type EmailAddress struct {
 	Description  string `json:"description"`
 	EmailAddress string `json:"emailAddress"`
 }
 type Contacts struct {
-	PhoneNumbers   []*PhoneNumbers   `json:"phoneNumbers"`
-	EmailAddresses []*EmailAddresses `json:"emailAddresses"`
+	PhoneNumbers   []*PhoneNumber  `json:"phoneNumbers"`
+	EmailAddresses []*EmailAddress `json:"emailAddresses"`
 }
-type Exceptions struct {
+type Exception struct {
 	ExceptionHours *Hours `json:"exceptionHours"`
 	StartDate      string `json:"startDate"`
 	Name           string `json:"name"`
@@ -50,10 +91,10 @@ type Hours struct {
 	Saturday  string `json:"saturday"`
 }
 type OperatingHours struct {
-	Exceptions    []*Exceptions `json:"exceptions"`
-	Description   string        `json:"description"`
-	StandardHours *Hours        `json:"standardHours"`
-	Name          string        `json:"name"`
+	Exceptions    []*Exception `json:"exceptions"`
+	Description   string       `json:"description"`
+	StandardHours *Hours       `json:"standardHours"`
+	Name          string       `json:"name"`
 }
 type Address struct {
 	PostalCode            string `json:"postalCode"`
@@ -94,7 +135,7 @@ type Multimedia struct {
 }
 
 type Park struct {
-	Activities     []*Activities     `json:"activities"`
+	Activities     []*Activity       `json:"activities"`
 	Addresses      []*Address        `json:"addresses"`
 	Contacts       *Contacts         `json:"contacts"`
 	Description    string            `json:"description"`
@@ -109,13 +150,13 @@ type Park struct {
 	LatLong        string            `json:"latLong"`
 	Latitude       string            `json:"latitude"`
 	Longitude      string            `json:"longitude"`
-	Multimedia     []Multimedia      `json:"multimedia"`
+	Multimedia     []*Multimedia     `json:"multimedia"`
 	Name           string            `json:"name"`
 	OperatingHours []*OperatingHours `json:"operatingHours"`
 	ParkCode       string            `json:"parkCode"`
 	RelevanceScore int               `json:"relevanceScore"`
 	States         string            `json:"states"`
-	Topics         []*Topics         `json:"topics"`
+	Topics         []*Topic          `json:"topics"`
 	URL            string            `json:"url"`
 	WeatherInfo    string            `json:"weatherInfo"`
 }

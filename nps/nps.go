@@ -11,8 +11,8 @@ type Client struct {
 	Parks *ParksService
 }
 
-func New(token string) (*Client, error) {
-	apiClient, err := api.New(token)
+func New(token string, opts ...api.ClientOption) (*Client, error) {
+	apiClient, err := api.New(token, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -24,4 +24,10 @@ func New(token string) (*Client, error) {
 
 	return c, nil
 
+}
+
+// RateLimit returns the rate limit information reported by the most recent
+// response. The zero value is returned if no request has been made yet.
+func (c *Client) RateLimit() api.RateLimitSnapshot {
+	return c.apiClient.RateLimit()
 }
