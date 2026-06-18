@@ -54,11 +54,11 @@ func statusHint(code int) string {
 	case http.StatusTooManyRequests:
 		return "your API key is being temporarily blocked from making further requests; the block will automatically be lifted by waiting an hour"
 	case http.StatusUnauthorized:
-		return "not authorized for api endpoint; check that your API key is valid"
+		return "not authorized for API endpoint; check that your API key is valid"
 	case http.StatusBadRequest:
-		return "request to api was not understood"
+		return "request to API was not understood"
 	case http.StatusNotFound:
-		return "api endpoint was not found"
+		return "API endpoint was not found"
 	default:
 		return ""
 	}

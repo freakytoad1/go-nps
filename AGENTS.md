@@ -18,9 +18,7 @@ golangci-lint run ./...
 ```
 
 - Keep the working tree `gofmt`-clean.
-- `golangci-lint` must pass. (Note: the repo currently has pre-existing lint
-  findings in `api/api.go` — do not introduce new ones, and prefer fixing any
-  you touch.)
+- `golangci-lint` must pass. Do not introduce new lint findings, and prefer fixing any you touch.
 - There are no tests yet. When adding behavior, add tests — a local
   `httptest.Server` is preferred, and exercising the real NPS API to capture
   authentic response shapes is even better.
@@ -73,4 +71,3 @@ Two packages with a deliberate split:
 - When you add/remove/change endpoints, options, or public types, update
   [README.md](README.md) (including the API coverage table) and this file in the
   same change.
-</content>

@@ -208,7 +208,7 @@ func (c *Client) DoParse(req *http.Request, v any) error {
 	defer resp.Body.Close() //nolint:errcheck // normal pattern to ignore this error
 
 	// unmarshal response
-	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
+	if err = json.NewDecoder(resp.Body).Decode(v); err != nil {
 		return fmt.Errorf("unable to decode json response: %w", err)
 	}
 
